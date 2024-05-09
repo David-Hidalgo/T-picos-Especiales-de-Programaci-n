@@ -94,3 +94,46 @@ function first<T>(contenedor:T[],pred:(a:T)=>boolean):T|void{
     });
 }
 ```
+
+## Prog. Genérica
+Caso de Uso : Optional<T>
+    Problema:
+    E.X; <!-- NULLPointerExeption -->
+    e.m() <!-- object undefined -->
+
+<!-- Leer libros
+    Tipos de datos Abstractos (Algebraicos) cap3(pag 64) -->
+    Γ⊢A Γ⊢B
+    Γ⊢A|B <!-- Operador en el espacio de los tipos Suma de typos -->
+    Γ⊢e:A|B
+    Encapsular el  manejo de NULL/undefined
+```ts
+class Optional<T> {
+    private _value:T|undefined
+    private assigned:boolean
+    
+    constructor(value?:T) {
+        if (value) {
+            this._value = value;
+            this.assigned = true;
+        } else {
+            this._value=undefined;
+            this.assigned=false       
+        }
+    }
+    
+    public get hasValue() : boolean {
+        if (this.assigned) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    public get value() : T {
+        if (!this.assigned) throw new Error("Jodete");
+            return (this._value as T)
+    }
+    
+}
+```
