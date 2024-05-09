@@ -16,3 +16,23 @@ class Box<T> {
 
 const name = new Box(1);
 console.log(name.contenido);
+
+let b:boolean
+
+function all<T>(contenedor:T[],pred:(a:T)=>boolean):boolean{
+    for (let i=0;i<contenedor.length;i++){
+        if (!pred(contenedor[i])){
+            return false;
+        }
+    }
+    return true;
+}
+
+function first<T>(contenedor:T[],pred:(a:T)=>boolean):T|void{
+    contenedor.forEach(element => {
+        if (pred(element)) {
+            return element;
+        }
+    });
+}
+

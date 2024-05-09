@@ -74,3 +74,23 @@ Implementar:
 all(l:T[],pred:T=>boolean):boolean
 first(hagarra el primero que cumple la condición)
 ```
+
+Implementación
+```ts
+function all<T>(contenedor:T[],pred:(a:T)=>boolean):boolean{
+    for (let i=0;i<contenedor.length;i++){
+        if (!pred(contenedor[i])){
+            return false;
+        }
+    }
+    return true;
+}
+
+function first<T>(contenedor:T[],pred:(a:T)=>boolean):T|void{
+    contenedor.forEach(element => {
+        if (pred(element)) {
+            return element;
+        }
+    });
+}
+```
