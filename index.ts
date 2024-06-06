@@ -1,10 +1,17 @@
-try {
-    
-} catch (error) {
-    console.error(error);
+class Items {
+    constructor() {
+        
+    }
 }
+class Cliente {
+    private teléfono:string
+    constructor(tlfn:string) {
+        this.teléfono=tlfn;
+    }
 
-function methodNamae():number {
-    console.error(" sa");
-    return 12
-} 
+}
+class OrdenDeCompra {
+    constructor() {
+        
+    }
+}
