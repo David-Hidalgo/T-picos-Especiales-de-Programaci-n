@@ -49,7 +49,6 @@ class DeleateOrder implements IService<DeleateOrderParams,void> {
 
 class Logger {
 	constructor() {
-		
 	}
 	log(a:any){
 		console.log(a);
@@ -67,8 +66,9 @@ class LogginServiceDecorator<TService, RService> implements IService<TService, R
 		let r = this.service.Execute(_entrada);
 		if (r.isRight()) {
 			this.logger.log(r.valorRight);
-		}
-		const a = new Error("arguments");
-		return Either.CrearLeft([a]);
+			return r;
+			}
+			const a = new Error("arguments");
+			return Either.CrearLeft([a]);
 	}
 }
