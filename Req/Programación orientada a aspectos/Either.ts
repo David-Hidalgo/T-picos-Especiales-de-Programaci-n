@@ -85,3 +85,6 @@ queso.TipoDeDato()
 if (queso.isLeft()) {
 	console.log(queso.valorLeft);
 }
+if (queso.isRight()) {
+	console.log(queso.valorRight);
+}
