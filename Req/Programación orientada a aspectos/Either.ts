@@ -50,15 +50,19 @@ export class Either<TL, TR> {
 		} else return false;
 	}
 
-	public get valor(): TL | TR {
+	public get valorLeft(): TL {
 		if (this.contiene == 0) {
 			return this.dato as TL;
 		} else {
-			if (this.contiene == 1) {
-				return this.dato as TR;
-			}
+			throw new Error("NO HAY NADA DENTRO");
 		}
-		throw new Error("NO HAY NADA DENTRO");
+	}
+	public get valorRight(): TR {
+		if (this.contiene == 1) {
+			return this.dato as TR;
+		} else {
+			throw new Error("NO HAY NADA DENTRO");
+		}
 	}
 
 	/**
@@ -79,5 +83,5 @@ let b: number
 let queso = Either.CrearLeft("Comida");
 queso.TipoDeDato()
 if (queso.isLeft()) {
-	console.log(queso.valor);
+	console.log(queso.valorLeft);
 }
