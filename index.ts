@@ -1,74 +1,35 @@
-import { Either } from './Req/Programación orientada a aspectos/Either';
-
-//  interface IServiciosNOSEPUEDE<TServicio, _RService> {
-
-// 	/**
-// 	 * Ejecuta interfáz genérica de Servicios
-// 	 */
-// 	cosa(a: number): number;
-// 	Execute(entrada: TServicio): number{
-// 	return 1
-// }
-// }
-
-interface IService<TServicio, RService> {
-
-	/**
-	 * Ejecuta interfáz genérica de Servicios
-	 */
-	Execute(entrada:TServicio): Either<Error[],RService>;
-}
-
-type CreateOrderParams={
-	a:string
-	
-}
-type DeleateOrderParams={
-	idOrder:string
-
-}
-
-class CreateOrder implements IService<CreateOrderParams,void> {
-	constructor() {
-		
-	}
-	public Execute(_entrada: CreateOrderParams): Either<Error[], void> {
-		const a = new Error("arguments");
-		return  Either.CrearLeft([a]);
-	}
-}
-class DeleateOrder implements IService<DeleateOrderParams,void> {
-	constructor() {
-		
-	}
-	public Execute(_entrada: DeleateOrderParams): Either<Error[], void> {
-		const a = new Error("arguments");
-		return  Either.CrearLeft([a]);
-	}
-}
-
-class Logger {
-	constructor() {
-	}
-	log(a:any){
-		console.log(a);
-	}
-}
-
-class LogginServiceDecorator<TService, RService> implements IService<TService, RService> {
-	private readonly service: IService<TService, RService>
-	private readonly logger: Logger
-	constructor(servicio: IService<TService, RService>, loggeador: Logger) {
-		this.service=servicio
-		this.logger=loggeador
-	}
-	public Execute(_entrada: TService): Either<Error[], RService> {
-		let r = this.service.Execute(_entrada);
-		if (r.isRight()) {
-			this.logger.log(r.valorRight);
-			return r;
-			}
-			const a = new Error("arguments");
-			return Either.CrearLeft([a]);
-	}
+class Container<T> {
+    private _value!:T
+    /* private constructor(private readonly value:T) {
+        
+    } */
+    public constructor(val:T){
+        this._value=val
+    }
+    /**
+     * of<TVal>
+     */
+    public static of<TVal>(val:TVal) {
+        return new Container(val)     
+    }
+    /**
+     * map<TMap>
+     * devuelve un contenedor de TMAP
+     */
+    public map<TMap>(fn:(entrada:T) =>TMap) {
+        return new Container<TMap>(fn(this._value))
+    }
+    
+    public get value() : T {
+        return this._value;
+    }
+    
+    /**
+     * ap<TMap>
+     * devuelve un contenedor de un contenedor de TMAP
+     * @returns TMAP
+     */
+    public ap<TMap>(c:Container<(val:T)=>TMap>) {
+        return c.map(fn=>this.map(fn));        
+    }
 }
