@@ -1,17 +1,18 @@
-import { Either } from './Either';
+import { Optional } from '../Genéricos y TiposFuncionales/Opcional';
+import { Either } from '../Programación orientada a aspectos/Either';
 
 class Item {
-	precio:number
-
-	constructor(precio:number) {
-		this.precio=precio
+	price:number
+	
+	constructor(price:number) {
+	this.price=price
 	}
 }
 class Cliente {
-	protected teléfono?: string;
+	public teléfono?: string;
 	protected dirección: string;
 	protected códigoPostal: string;
-	protected status: boolean;
+	public status: boolean;
 	protected país: string;
 
 	constructor(dir: string, bol: boolean, postCode: string, pais: string, tlfn?: string) {
@@ -36,62 +37,98 @@ class OrdenDeCompra {
 	}
 }
 
-abstract class Validador {
+abstract class Validador<TValidar> {
 
-
-	protected constructor(errores: Array<Error>) {
-		if (errores.length != 0) {
-			Either.CrearLeft(errores)
-		} else {
-			let ar: void;
-			const a = Either.crearRight<Error[], void>(ar);
-		}
+	protected constructor() {
 	}
 
-	public abstract validate<TValidar>(aValidar: TValidar): Either<Error[], void>;
+	/**
+	 * protected
+	 */
+	protected Devolución(errores: Array<Error>){ 
+		let a: Either<Error[], void>;
+		if (errores.length!=0){
+			a = Either.CrearLeft(errores)
+		}else{
+			let ar: void;
+			a = Either.crearRight<Error[], void>(ar);
+		}
+		return a;
+	}
+
+	public abstract validate(aValidar: TValidar): Either<Error[], void>;
 }
 
-class ValidadorOrdenDeCompra extends Validador {
+class ValidadorOrdenDeCompra<TValidar extends OrdenDeCompra> extends Validador<OrdenDeCompra>{
 
-	private constructor(errores: Array<Error>) {
-		super(errores)
+	private constructor() {
+		super()
 	}
-
-
-
+	
 	/**
 	 * validate
 	 */
-	public validate<TValidar>(aValidar: TValidar): Either<Error[], void> {
-		let a: void
-		return Either.crearRight<Error[], void>(a);
-	};
-
-}
-class ValidadorCliente extends Validador {
-	private constructor(errores: Array<Error>) {
-		super(errores);
+	public validate(aValidar: TValidar): Either<Error[], void>{
+		let errores: Array<Error> = new Array<Error>();
+		if (aValidar==undefined) {
+			errores.push(new Error("La orden no puede ser nula"));
+		}
+		if (aValidar.comprador==undefined) {
+			errores.push(new Error("El comprador no puede ser nulo"));
+		}else{
+			let validador: ValidadorClientes<Cliente> = new ValidadorClientes();
+			let opcional: Either<Error[], void> = validador.validate(aValidar.comprador);
+			if (opcional.isLeft()) {
+				errores= errores.concat(opcional.valorLeft);
+			}
+		}
+		if (aValidar.orden==undefined) {
+			errores.push(new Error("La orden no puede ser nula"));
+		}
+		return Either.CrearLeft(errores);
 	}
-	private validateTlfn(a: string) {
+}
+class ValidadorClientes<TValidar extends Cliente> extends Validador<Cliente>{
+
+	public constructor() {
+		super()
+	}
+
+	private validateTlfn(a: string):Optional<Error> {
+		let opcional: Optional<Error>
 		if (a.length == 10) {
 			const operador: string = a.slice(0, 2);
 
 			const resto: string = a.slice(3, 9);
+			opcional = new Optional();
 		} else {
-			return new Error("El teléfono no tiene 9 dígitos");
+			opcional = new Optional(new Error("El teléfono no tiene 9 dígitos"));
 		}
+		return opcional;
 	}
-
 
 	/**
 	 * validate
 	 */
-	public validate<TValidar>(aValidar: TValidar): Either<Error[], void> {
-		let a: void;
-		return Either.crearRight<Error[], void>(a);
+	public validate(aValidar: TValidar): Either<Error[], void>{
+		let errores: Array<Error> = new Array<Error>();
+		if (aValidar==undefined) {
+			errores.push(new Error("El cliente no puede ser nulo"));
+		}
+		if (aValidar.teléfono==undefined) {
+			errores.push(new Error("El teléfono no puede ser nulo"));
+		}else{
+			let opcional: Optional<Error> = this.validateTlfn(aValidar.teléfono);
+			if (opcional.hasValue==true) {
+				errores.push(opcional.value);
+			}
+		}
+		if (aValidar.status==false) {
+			errores.push(new Error("La dirección no puede ser nula"));
+		}
+		return this.Devolución(errores);
 	}
 }
-
 interface ValidateI {
 	/**
 	 * validate
