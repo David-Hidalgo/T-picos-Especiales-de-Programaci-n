@@ -38,6 +38,7 @@ class OrdenDeCompra {
 }
 
 abstract class Validador<TValidar> {
+	errores?: Either<Array<Error>, void>;
 
 	protected constructor() {
 	}
@@ -46,14 +47,13 @@ abstract class Validador<TValidar> {
 	 * protected
 	 */
 	protected Devolución(errores: Array<Error>){ 
-		let a: Either<Error[], void>;
 		if (errores.length!=0){
-			a = Either.CrearLeft(errores)
+			this.errores = Either.CrearLeft(errores)
 		}else{
 			let ar: void;
-			a = Either.crearRight<Error[], void>(ar);
+			this.errores = Either.crearRight<Error[], void>(ar);
 		}
-		return a;
+		;
 	}
 
 	public abstract validate(aValidar: TValidar): Either<Error[], void>;
@@ -72,6 +72,12 @@ class ValidadorOrdenDeCompra<TValidar extends OrdenDeCompra> extends Validador<O
 		let errores: Array<Error> = new Array<Error>();
 		if (aValidar==undefined) {
 			errores.push(new Error("La orden no puede ser nula"));
+		}else{
+			let validador: ValidadorClientes<Cliente> = new ValidadorClientes<Cliente>();
+			let opcional: Either<Error[], void> = validador.validate(aValidar.comprador);
+			if (opcional.isLeft()) {
+				errores= errores.concat(opcional.valorLeft);
+			}
 		}
 		if (aValidar.comprador==undefined) {
 			errores.push(new Error("El comprador no puede ser nulo"));

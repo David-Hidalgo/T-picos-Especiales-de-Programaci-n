@@ -71,3 +71,7 @@ class LogginServiceDecorator<TService, RService> implements IService<TService, R
 		return r;
 	}
 }
+
+function main() {
+	new LogginServiceDecorator(new CreateOrder(), new Logger()).Execute({a:"a"});
+}
